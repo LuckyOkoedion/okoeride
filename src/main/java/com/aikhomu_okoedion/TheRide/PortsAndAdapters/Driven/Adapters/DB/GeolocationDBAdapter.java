@@ -4,8 +4,11 @@ import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.GeolocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,14 +18,15 @@ public class GeolocationDBAdapter implements GeolocationRepository {
     @Qualifier("geolocationRepository")
     GeolocationRepository geolocationRepository;
 
+
     @Override
     public <S extends Geolocation> S save(S entity) {
         return geolocationRepository.save(entity);
     }
 
     @Override
-    public <S extends Geolocation> Iterable<S> saveAll(Iterable<S> entities) {
-        return geolocationRepository.saveAll(entities);
+    public <S extends Geolocation> List<S> saveAll(Iterable<S> entites) {
+        return geolocationRepository.saveAll(entites);
     }
 
     @Override
@@ -36,12 +40,12 @@ public class GeolocationDBAdapter implements GeolocationRepository {
     }
 
     @Override
-    public Iterable<Geolocation> findAll() {
+    public List<Geolocation> findAll() {
         return geolocationRepository.findAll();
     }
 
     @Override
-    public Iterable<Geolocation> findAllById(Iterable<Integer> integers) {
+    public List<Geolocation> findAllById(Iterable<Integer> integers) {
         return geolocationRepository.findAllById(integers);
     }
 
@@ -63,7 +67,6 @@ public class GeolocationDBAdapter implements GeolocationRepository {
     @Override
     public void deleteAllById(Iterable<? extends Integer> integers) {
         geolocationRepository.deleteAllById(integers);
-
     }
 
     @Override
@@ -74,5 +77,20 @@ public class GeolocationDBAdapter implements GeolocationRepository {
     @Override
     public void deleteAll() {
         geolocationRepository.deleteAll();
+    }
+
+    @Override
+    public Slice<Geolocation> findAll(Pageable pageable) {
+        return geolocationRepository.findAll(pageable);
+    }
+
+    @Override
+    public <S extends Geolocation> S insert(S entity) {
+        return geolocationRepository.insert(entity);
+    }
+
+    @Override
+    public <S extends Geolocation> List<S> insert(Iterable<S> entities) {
+        return geolocationRepository.insert(entities);
     }
 }

@@ -1,9 +1,9 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.cassandra.repository.CassandraRepository;
 
 
-public interface DriverRepository extends CrudRepository<Driver, Integer> {
+
+public interface DriverRepository extends CassandraRepository<Driver, Integer> {
 }

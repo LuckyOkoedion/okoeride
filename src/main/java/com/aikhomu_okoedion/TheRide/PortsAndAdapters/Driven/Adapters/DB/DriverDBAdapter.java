@@ -1,12 +1,17 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB;
 
+
 import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+
 
 @Repository
 public class DriverDBAdapter implements DriverRepository {
@@ -15,24 +20,15 @@ public class DriverDBAdapter implements DriverRepository {
     @Qualifier("driverRepository")
     DriverRepository driverRepository;
 
-    public DriverDBAdapter() {
-
-    }
-
-    public DriverDBAdapter(DriverRepository driverRepository) {
-
-        this.driverRepository = driverRepository;
-
-    }
 
     @Override
-    public <S extends Driver> S save(S entity) {
+    public Driver save(Driver entity) {
         return driverRepository.save(entity);
     }
 
     @Override
-    public <S extends Driver> Iterable<S> saveAll(Iterable<S> entities) {
-        return driverRepository.saveAll(entities);
+    public <S extends Driver> List<S> saveAll(Iterable<S> entites) {
+        return driverRepository.saveAll(entites);
     }
 
     @Override
@@ -46,12 +42,12 @@ public class DriverDBAdapter implements DriverRepository {
     }
 
     @Override
-    public Iterable<Driver> findAll() {
+    public List<Driver> findAll() {
         return driverRepository.findAll();
     }
 
     @Override
-    public Iterable<Driver> findAllById(Iterable<Integer> integers) {
+    public List<Driver> findAllById(Iterable<Integer> integers) {
         return driverRepository.findAllById(integers);
     }
 
@@ -78,11 +74,27 @@ public class DriverDBAdapter implements DriverRepository {
     @Override
     public void deleteAll(Iterable<? extends Driver> entities) {
         driverRepository.deleteAll(entities);
+
     }
 
     @Override
     public void deleteAll() {
         driverRepository.deleteAll();
 
+    }
+
+    @Override
+    public Slice<Driver> findAll(Pageable pageable) {
+        return driverRepository.findAll(pageable);
+    }
+
+    @Override
+    public <S extends Driver> S insert(S entity) {
+        return driverRepository.insert(entity);
+    }
+
+    @Override
+    public <S extends Driver> List<S> insert(Iterable<S> entities) {
+        return driverRepository.insert(entities);
     }
 }

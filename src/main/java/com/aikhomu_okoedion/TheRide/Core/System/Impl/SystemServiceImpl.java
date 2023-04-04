@@ -6,12 +6,14 @@ import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.Core.System.Interfaces.ISystemService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SystemServiceImpl implements ISystemService {
 
     @Autowired
+    @Qualifier("kafkaMessageAdapter")
     IMessagePort messenger;
 
 

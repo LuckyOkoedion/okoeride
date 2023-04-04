@@ -5,17 +5,15 @@ import com.aikhomu_okoedion.TheRide.Core.Dtos.DriverDTO;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IAdminService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB.DriverDBAdapter;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminServiceImpl implements IAdminService {
 
+    @Autowired
     DriverRepository driverRepository;
 
-
-    public AdminServiceImpl (DriverDBAdapter driverDBAdapter) {
-        driverRepository = driverDBAdapter;
-    }
 
 
     @Override

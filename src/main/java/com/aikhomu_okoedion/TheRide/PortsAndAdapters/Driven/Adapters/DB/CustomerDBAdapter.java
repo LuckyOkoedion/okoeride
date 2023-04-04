@@ -4,8 +4,11 @@ import com.aikhomu_okoedion.TheRide.Core.Domain.Customer;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,14 +18,15 @@ public class CustomerDBAdapter implements CustomerRepository {
     @Qualifier("customerRepository")
     CustomerRepository customerRepository;
 
+
     @Override
-    public <S extends Customer> S save(S entity) {
+    public Customer save(Customer entity) {
         return customerRepository.save(entity);
     }
 
     @Override
-    public <S extends Customer> Iterable<S> saveAll(Iterable<S> entities) {
-        return customerRepository.saveAll(entities);
+    public <S extends Customer> List<S> saveAll(Iterable<S> entites) {
+        return customerRepository.saveAll(entites);
     }
 
     @Override
@@ -36,12 +40,12 @@ public class CustomerDBAdapter implements CustomerRepository {
     }
 
     @Override
-    public Iterable<Customer> findAll() {
+    public List<Customer> findAll() {
         return customerRepository.findAll();
     }
 
     @Override
-    public Iterable<Customer> findAllById(Iterable<Integer> integers) {
+    public List<Customer> findAllById(Iterable<Integer> integers) {
         return customerRepository.findAllById(integers);
     }
 
@@ -53,19 +57,16 @@ public class CustomerDBAdapter implements CustomerRepository {
     @Override
     public void deleteById(Integer integer) {
         customerRepository.deleteById(integer);
-
     }
 
     @Override
     public void delete(Customer entity) {
         customerRepository.delete(entity);
-
     }
 
     @Override
     public void deleteAllById(Iterable<? extends Integer> integers) {
         customerRepository.deleteAllById(integers);
-
     }
 
     @Override
@@ -76,5 +77,20 @@ public class CustomerDBAdapter implements CustomerRepository {
     @Override
     public void deleteAll() {
         customerRepository.deleteAll();
+    }
+
+    @Override
+    public Slice<Customer> findAll(Pageable pageable) {
+        return customerRepository.findAll(pageable);
+    }
+
+    @Override
+    public <S extends Customer> S insert(S entity) {
+        return customerRepository.insert(entity);
+    }
+
+    @Override
+    public <S extends Customer> List<S> insert(Iterable<S> entities) {
+        return customerRepository.insert(entities);
     }
 }

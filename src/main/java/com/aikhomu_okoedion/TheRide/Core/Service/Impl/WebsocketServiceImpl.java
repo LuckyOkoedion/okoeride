@@ -6,12 +6,14 @@ import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB.Geolocat
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.GeolocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class WebsocketServiceImpl implements IWebsocketService {
 
     @Autowired
+    @Qualifier("kafkaMessageAdapter")
     IMessagePort messenger;
 
     GeolocationRepository geolocationRepository;

@@ -14,6 +14,7 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
 @Component
+
 @ServerEndpoint(value = "/websocket", decoders = MessageDecoder.class)
 public class WebsocketAdapter implements IWebsocketPort {
 

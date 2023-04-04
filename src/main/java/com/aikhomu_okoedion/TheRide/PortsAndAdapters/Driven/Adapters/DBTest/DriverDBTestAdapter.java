@@ -2,18 +2,24 @@ package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class DriverDBTestAdapter implements DriverRepository {
+
     @Override
     public Driver save(Driver entity) {
         return entity;
     }
 
     @Override
-    public <S extends Driver> Iterable<S> saveAll(Iterable<S> entities) {
-        return entities;
+    public <S extends Driver> List<S> saveAll(Iterable<S> entites) {
+        return null;
     }
 
     @Override
@@ -27,12 +33,12 @@ public class DriverDBTestAdapter implements DriverRepository {
     }
 
     @Override
-    public Iterable<Driver> findAll() {
+    public List<Driver> findAll() {
         return null;
     }
 
     @Override
-    public Iterable<Driver> findAllById(Iterable<Integer> integers) {
+    public List<Driver> findAllById(Iterable<Integer> integers) {
         return null;
     }
 
@@ -64,5 +70,20 @@ public class DriverDBTestAdapter implements DriverRepository {
     @Override
     public void deleteAll() {
 
+    }
+
+    @Override
+    public Slice<Driver> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public <S extends Driver> S insert(S entity) {
+        return null;
+    }
+
+    @Override
+    public <S extends Driver> List<S> insert(Iterable<S> entities) {
+        return null;
     }
 }

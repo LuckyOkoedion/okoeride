@@ -4,15 +4,17 @@ package com.aikhomu_okoedion.TheRide.Core.Domain;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.Column;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.Table;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 
 @Data
-@Entity
+@Table
 public class Driver {
-    @Id
+    @PrimaryKey
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column

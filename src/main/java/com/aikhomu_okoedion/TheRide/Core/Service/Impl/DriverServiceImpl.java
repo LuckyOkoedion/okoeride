@@ -10,6 +10,7 @@ import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB.DriverDB
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,6 +26,7 @@ public class DriverServiceImpl implements IDriverService {
     IWebsocketService websocketService;
 
     @Autowired
+    @Qualifier("kafkaMessageAdapter")
     IMessagePort message;
 
 

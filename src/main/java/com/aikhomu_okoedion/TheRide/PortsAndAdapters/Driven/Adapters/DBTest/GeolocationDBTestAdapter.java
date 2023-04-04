@@ -2,17 +2,23 @@ package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.GeolocationRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class GeolocationDBTestAdapter implements GeolocationRepository {
+
     @Override
     public Geolocation save(Geolocation entity) {
-        return null;
+        return entity;
     }
 
     @Override
-    public <S extends Geolocation> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends Geolocation> List<S> saveAll(Iterable<S> entites) {
         return null;
     }
 
@@ -27,12 +33,12 @@ public class GeolocationDBTestAdapter implements GeolocationRepository {
     }
 
     @Override
-    public Iterable<Geolocation> findAll() {
+    public List<Geolocation> findAll() {
         return null;
     }
 
     @Override
-    public Iterable<Geolocation> findAllById(Iterable<Integer> integers) {
+    public List<Geolocation> findAllById(Iterable<Integer> integers) {
         return null;
     }
 
@@ -64,5 +70,20 @@ public class GeolocationDBTestAdapter implements GeolocationRepository {
     @Override
     public void deleteAll() {
 
+    }
+
+    @Override
+    public Slice<Geolocation> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public <S extends Geolocation> S insert(S entity) {
+        return null;
+    }
+
+    @Override
+    public <S extends Geolocation> List<S> insert(Iterable<S> entities) {
+        return null;
     }
 }
