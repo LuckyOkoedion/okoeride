@@ -5,33 +5,47 @@ import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.RideDTO;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IDriverService;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IWebsocketService;
+import com.aikhomu_okoedion.TheRide.Core.System.Impl.SystemServiceImpl;
 import com.aikhomu_okoedion.TheRide.Core.System.Interfaces.ISystemService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB.DriverDBAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.DriverDBTestAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaMessageAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaTestAdapter;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DriverServiceImpl implements IDriverService {
 
-    @Autowired
+
     ISystemService systemService;
 
 
     DriverRepository driverRepository;
 
-    @Autowired
     IWebsocketService websocketService;
 
+    IMessagePort messenger;
+
+
     @Autowired
-    @Qualifier("kafkaMessageAdapter")
-    IMessagePort message;
-
-
-    public DriverServiceImpl(DriverDBAdapter driverDBAdapter) {
+    public DriverServiceImpl(DriverDBAdapter driverDBAdapter, SystemServiceImpl systemServiceImpl,
+                             WebsocketServiceImpl websocketServiceImpl, KafkaMessageAdapter kafkaMessageAdapter) {
         this.driverRepository = driverDBAdapter;
+        this.systemService = systemServiceImpl;
+        this.websocketService = websocketServiceImpl;
+        this.messenger = kafkaMessageAdapter;
+    }
+
+    public DriverServiceImpl(SystemServiceImpl systemService, DriverDBTestAdapter dbTestAdapter,
+                             WebsocketServiceImpl websocketServiceImpl, KafkaTestAdapter kafkaTestAdapter) {
+        this.systemService = systemService;
+        this.driverRepository = dbTestAdapter;
+        this.websocketService = websocketServiceImpl;
+        this.messenger = kafkaTestAdapter;
+
     }
 
 

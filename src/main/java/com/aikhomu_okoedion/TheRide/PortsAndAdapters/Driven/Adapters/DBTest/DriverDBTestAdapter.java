@@ -2,18 +2,43 @@ package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class DriverDBTestAdapter implements DriverRepository {
 
+    // private static List<Driver> mockDB = new ArrayList<>();
+
+    public DriverDBTestAdapter() {
+//        Driver driver1 = new Driver();
+//        driver1.setName("driver1");
+//        driver1.setId(1000);
+//        Driver driver2 = new Driver();
+//        driver2.setName("driver2");
+//        driver2.setId(2000);
+//        Driver driver3 = new Driver();
+//        driver3.setName("driver3");
+//        driver1.setId(3000);
+//        mockDB.add(driver1);
+//        mockDB.add(driver2);
+//        mockDB.add(driver3);
+
+
+    }
+
     @Override
     public Driver save(Driver entity) {
+
+//        mockDB.add(entity);
         return entity;
     }
 
@@ -24,7 +49,26 @@ public class DriverDBTestAdapter implements DriverRepository {
 
     @Override
     public Optional<Driver> findById(Integer integer) {
-        return Optional.empty();
+
+        List<Driver> mockDB = new ArrayList<>();
+
+        Driver driver1 = new Driver();
+        driver1.setName("driver1");
+        driver1.setId(1000);
+        Driver driver2 = new Driver();
+        driver2.setName("driver2");
+        driver2.setId(2000);
+        Driver driver3 = new Driver();
+        driver3.setName("driver3");
+        driver3.setId(3000);
+        mockDB.add(driver1);
+        mockDB.add(driver2);
+        mockDB.add(driver3);
+
+        Optional<Driver> res =  mockDB.stream()
+                .filter(val -> val.getId().equals(integer))
+                .findFirst();
+        return res;
     }
 
     @Override
@@ -34,7 +78,22 @@ public class DriverDBTestAdapter implements DriverRepository {
 
     @Override
     public List<Driver> findAll() {
-        return null;
+        List<Driver> mockDB = new ArrayList<>();
+
+        Driver driver1 = new Driver();
+        driver1.setName("driver1");
+        driver1.setId(1000);
+        Driver driver2 = new Driver();
+        driver2.setName("driver2");
+        driver2.setId(2000);
+        Driver driver3 = new Driver();
+        driver3.setName("driver3");
+        driver1.setId(3000);
+        mockDB.add(driver1);
+        mockDB.add(driver2);
+        mockDB.add(driver3);
+
+        return mockDB;
     }
 
     @Override

@@ -22,6 +22,7 @@ public class WebsocketAdapter implements IWebsocketPort {
     IWebsocketService websocketService;
 
 
+
     @OnOpen
     @Override
     public void onOpen(Session session) {

@@ -7,7 +7,7 @@ import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 
 public interface ISystemService {
     Geolocation trackDriverLocation(int driverId);
-    Driver matchCustToDriver(int customerId, GeolocationDTO customerLocation);
+    Driver matchCustToDriver(int customerId, GeolocationDTO customerLocation, String destination);
 
     void notifyDriverOfCust(int driverId);
 }
