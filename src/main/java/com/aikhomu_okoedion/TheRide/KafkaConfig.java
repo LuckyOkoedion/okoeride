@@ -1,5 +1,6 @@
 package com.aikhomu_okoedion.TheRide;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -47,13 +48,6 @@ public class KafkaConfig {
                                 "retention.check.interval.ms", topicRetentionCheckIntervalMs
                         ))
                         .build(),
-                TopicBuilder.name("pending-control")
-                        .replicas(1)
-                        .configs(Map.of(
-                                "retention.ms", topicRetentionMs,
-                                "retention.check.interval.ms", topicRetentionCheckIntervalMs
-                        ))
-                        .build(),
                 TopicBuilder.name("matched")
                         .partitions(1)
                         .configs(Map.of(
@@ -61,7 +55,7 @@ public class KafkaConfig {
                                 "retention.check.interval.ms", topicRetentionCheckIntervalMs
                         ))
                         .build(),
-                TopicBuilder.name("matched-control")
+                TopicBuilder.name("accepted")
                         .partitions(1)
                         .configs(Map.of(
                                 "retention.ms", topicRetentionMs,
@@ -97,8 +91,24 @@ public class KafkaConfig {
 
 
     @Bean
+    public ProducerFactory<String, Ride> rideProducerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+
+    @Bean
     public KafkaTemplate<String, GeolocationDTO> geolocationKafkaTemplate() {
         return new KafkaTemplate<>(geolocationProducerFactory());
+    }
+
+
+    @Bean
+    public KafkaTemplate<String, Ride> rideKafkaTemplate() {
+        return new KafkaTemplate<>(rideProducerFactory());
     }
 
     @Bean
@@ -115,7 +125,15 @@ public class KafkaConfig {
         return factory;
     }
 
-    private DefaultKafkaConsumerFactory<String, String> stringConsumerFactory() {
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Ride> rideListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Ride> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(rideConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public DefaultKafkaConsumerFactory<String, String> stringConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "group1");
@@ -124,7 +142,8 @@ public class KafkaConfig {
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
-    private DefaultKafkaConsumerFactory<String, GeolocationDTO> geolocationConsumerFactory() {
+    @Bean
+    public DefaultKafkaConsumerFactory<String, GeolocationDTO> geolocationConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "group1");
@@ -132,6 +151,17 @@ public class KafkaConfig {
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(GeolocationDTO.class));
+    }
+
+    @Bean
+    public DefaultKafkaConsumerFactory<String, Ride> rideConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "group1");
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Ride.class));
     }
 
 }

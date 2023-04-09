@@ -29,7 +29,7 @@ public class WebsocketTestAdapter implements IWebsocketPort {
     }
 
     @Override
-    public void onMessage(MessageDTO message, Session session) {
+    public void onMessage(String message, Session session) {
 
     }
 

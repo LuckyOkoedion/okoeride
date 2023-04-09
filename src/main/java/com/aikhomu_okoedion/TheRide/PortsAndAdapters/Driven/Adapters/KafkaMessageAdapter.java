@@ -1,6 +1,7 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -23,9 +24,8 @@ import java.util.List;
 public class KafkaMessageAdapter implements IMessagePort {
 
     private final String PENDING_TOPIC = "pending";
-    private final String PENDING_CONTROL = "pending-control";
+    private final String ACCEPTED = "accepted";
     private final String MATCHED = "matched";
-    private final String MATCHED_CONTROL = "matched-control";
 
     @Autowired
     @Qualifier("geolocationKafkaTemplate")
@@ -34,6 +34,12 @@ public class KafkaMessageAdapter implements IMessagePort {
     @Autowired
     @Qualifier("stringKafkaTemplate")
     KafkaTemplate<String, String> stringKafkaTemplate;
+
+
+
+    @Autowired
+    @Qualifier("rideKafkaTemplate")
+    KafkaTemplate<String, Ride> rideKafkaTemplate;
 
     @Autowired
     @Qualifier("geolocationConsumerFactory")
@@ -46,9 +52,15 @@ public class KafkaMessageAdapter implements IMessagePort {
 
 
     @Override
-    public void send(Geolocation location) {
+    public void sendLocationToPending(Geolocation location) {
         GeolocationDTO data = new GeolocationDTO(location);
         geolocationKafkaTemplate.send(PENDING_TOPIC, Integer.toString(location.getId()), data);
+    }
+
+    @Override
+    public void sendRideToAccepted(Ride ride) {
+        this.rideKafkaTemplate.send(ACCEPTED, Integer.toString(ride.getId()), ride);
+
     }
 
     @Override

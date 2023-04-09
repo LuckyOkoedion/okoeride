@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  namespace: the-ride-ns
+spec:
+  selector:
+    app: zookeeper
+  ports:
+    - name: client
+      port: 2181
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  namespace: the-ride-ns
+spec:
+  serviceName: zookeeper
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: bitnami/zookeeper:latest
+          ports:
+            - name: client
+              containerPort: 2181
+            - name: follower
+              containerPort: 2888
+            - name: leader
+              containerPort: 3888
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/zookeeper/data
+            - name: conf
+              mountPath: /opt/bitnami/zookeeper/conf
+      # volumes:
+        # - name: data
+        #   persistentVolumeClaim:
+        #     claimName: zookeeper-data
+        # - name: conf
+        #   configMap:
+        #     name: zookeeper-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: the-ride-ns
+spec:
+  selector:
+    app: kafka
+  ports:
+    - name: tcp
+      port: 9092
+      targetPort: 9092
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: the-ride-ns
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          image: bitnami/kafka:latest
+          env:
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+          ports:
+            - name: tcp
+              containerPort: 9092
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/kafka/data
+            - name: conf
+              mountPath: /opt/bitnami/kafka/config
+      # volumes:
+      #   - name: data
+      #     persistentVolumeClaim:
+      #       claimName: kafka-data
+      #   - name: conf
+      #     configMap:
+      #       name: kafka-config

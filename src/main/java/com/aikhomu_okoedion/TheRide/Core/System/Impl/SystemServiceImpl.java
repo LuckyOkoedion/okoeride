@@ -37,6 +37,7 @@ public class SystemServiceImpl implements ISystemService {
     DriverRepository driverRepository;
 
 
+    @Autowired
     public SystemServiceImpl(KafkaMessageAdapter kafkaMessageAdapter, RideDBAdapter rideDBAdapter,
                              DriverDBAdapter driverDBAdapter) {
         this.messenger = kafkaMessageAdapter;

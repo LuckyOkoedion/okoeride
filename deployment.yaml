@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: the-ride-app-deployment
+  namespace: the-ride-ns
+spec:
+  selector:
+    matchLabels:
+      app: the-ride-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: the-ride-app
+    spec:
+      containers:
+        - name: the-ride-app-container
+          image: theride
+          ports:
+            - containerPort: 8080
+          env:
+            - name: CASSANDRA_HOST
+              value: cassandra
+            - name: KAFKA_HOST
+              value: kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: the-ride-app-service
+  namespace: the-ride-ns
+spec:
+  selector:
+    app: theRide-app
+  ports:
+    - protocol: TCP
+      port: 8085
+      targetPort: 8080
+  type: LoadBalancer

@@ -8,13 +8,12 @@ Java SE 17 or later
 # HOW TO RUN
 
 
-## Install Cassandra  DB
-On Mac Run:
+## Build the docker image
 
-1) brew install cassandra
-2) cassandra -f
-3) cqlsh
-4) CREATE KEYSPACE the_ride WITH replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1};
+docker build -t theride:latest .
+
+## Run the kubernetes deployment
+
 
 ## Build
 

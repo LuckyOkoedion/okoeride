@@ -76,7 +76,7 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public Driver requestRide(int customerId, GeolocationDTO location, String destination) {
         Geolocation geolocation = new Geolocation(location);
-        this.messenger.send(geolocation);
+        this.messenger.sendLocationToPending(geolocation);
         Ride res = this.getMatchedRide(customerId, destination);
 
         Optional<Driver> theDriver = this.driverRepository.findById(res.getDriverId());

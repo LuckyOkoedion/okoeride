@@ -1,6 +1,7 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,7 +18,7 @@ public class KafkaTestAdapter implements IMessagePort {
    // private static List<Geolocation> mockKafka = new ArrayList<>();
 
     @Override
-    public void send(Geolocation location) {
+    public void sendLocationToPending(Geolocation location) {
 
         List<Geolocation> mockKafka = new ArrayList<>();
 
@@ -29,7 +30,22 @@ public class KafkaTestAdapter implements IMessagePort {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        System.out.println();
+
+    }
+
+    @Override
+    public void sendRideToAccepted(Ride ride) {
+        List<Ride> mockKafka = new ArrayList<>();
+
+        mockKafka.add(ride);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(ride);
+            System.out.println("===== accepted ride published to kafka =====" + json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

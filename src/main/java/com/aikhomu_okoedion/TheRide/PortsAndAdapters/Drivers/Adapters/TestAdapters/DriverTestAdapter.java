@@ -1,7 +1,7 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Adapters.TestAdapters;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
-import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.RideDTO;
 import com.aikhomu_okoedion.TheRide.Core.Service.Impl.DriverServiceImpl;
 import com.aikhomu_okoedion.TheRide.Core.Service.Impl.WebsocketServiceImpl;
@@ -11,10 +11,10 @@ import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.Driv
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.GeolocationDBTestAdapter;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.RideDBTestAdapter;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaTestAdapter;
-import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.IDriverPort;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DriverTestAdapter implements IDriverPort {
@@ -31,22 +31,18 @@ public class DriverTestAdapter implements IDriverPort {
         GeolocationDBTestAdapter geolocationDBTestAdapter = new GeolocationDBTestAdapter();
         WebsocketServiceImpl websocketService = new WebsocketServiceImpl(geolocationDBTestAdapter, kafkaTestAdapter);
 
-        this.driverService = new DriverServiceImpl(systemService, driverDBTestAdapter, websocketService, kafkaTestAdapter);
+        this.driverService = new DriverServiceImpl(systemService, driverDBTestAdapter, websocketService, kafkaTestAdapter, rideDBTestAdapter);
     }
 
     @Override
-    public void acceptRequest(RideDTO rideDetails) {
+    public void acceptRequest(Ride rideDetails) {
         this.driverService.acceptRequest(rideDetails);
     }
 
-    @Override
-    public void broadcastLocation(int driverId, GeolocationDTO location) {
-        this.driverService.broadcastLocation(driverId, location);
 
-    }
 
     @Override
-    public MessageDTO getMatchedRide(int driverId) {
+    public List<Ride> getMatchedRide(int driverId) {
         return this.driverService.getMatchedRide(driverId);
     }
 }
