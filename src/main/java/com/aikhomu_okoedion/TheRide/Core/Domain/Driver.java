@@ -2,18 +2,18 @@ package com.aikhomu_okoedion.TheRide.Core.Domain;
 
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import java.time.Instant;
 
 @Data
-@Table
+@Table("driver")
 public class Driver {
     @PrimaryKey
     private Integer id;
@@ -31,6 +31,7 @@ public class Driver {
     @Column
     private Integer rideId;
 
+    @Autowired
     public Driver() {
 
         this.id = Instant.now().getNano();

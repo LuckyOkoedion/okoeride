@@ -5,6 +5,7 @@ package com.aikhomu_okoedion.TheRide.Core.Domain;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
@@ -12,7 +13,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import java.time.Instant;
 
 @Data
-@Table
+@Table("geolocation")
 public class Geolocation {
 
     @PrimaryKey
@@ -26,6 +27,7 @@ public class Geolocation {
     @Column
     private Integer customerId;
 
+    @Autowired
     public Geolocation() {
 
         this.id = Instant.now().getNano();
