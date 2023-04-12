@@ -1,9 +1,11 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Adapters.TestAdapters;
 
 import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
+import com.aikhomu_okoedion.TheRide.Core.Service.Impl.WebsocketServiceImpl;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IWebsocketService;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.GeolocationDBTestAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaTestAdapter;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.IWebsocketPort;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.Session;
@@ -11,8 +13,15 @@ import javax.websocket.Session;
 @Component
 public class WebsocketTestAdapter implements IWebsocketPort {
 
-    @Autowired
+
     IWebsocketService websocketService;
+
+    public WebsocketTestAdapter() {
+        GeolocationDBTestAdapter geolocationDBTestAdapter = new GeolocationDBTestAdapter();
+        KafkaTestAdapter kafkaTestAdapter = new KafkaTestAdapter();
+
+        this.websocketService = new WebsocketServiceImpl(geolocationDBTestAdapter, kafkaTestAdapter);
+    }
 
     @Override
     public void onOpen(Session session) {
@@ -20,7 +29,7 @@ public class WebsocketTestAdapter implements IWebsocketPort {
     }
 
     @Override
-    public void onMessage(MessageDTO message, Session session) {
+    public void onMessage(String message, Session session) {
 
     }
 

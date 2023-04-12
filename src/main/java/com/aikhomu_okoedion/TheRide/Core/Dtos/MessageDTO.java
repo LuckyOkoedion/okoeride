@@ -6,6 +6,6 @@ import lombok.Data;
 public class MessageDTO {
     private int locationX;
     private int locationY;
-    private int driverId;
-    private Integer customerId = null;
+    private Integer driverId;
+    private Integer customerId;
 }

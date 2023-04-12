@@ -2,27 +2,39 @@ package com.aikhomu_okoedion.TheRide.Core.Domain;
 
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import java.time.Instant;
 
 @Data
-@Table
+@Table("ride")
 public class Ride {
     @PrimaryKey
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column
-    private int customerId;
+    private Integer customerId;
 
     @Column
-    private int driverId;
+    private Integer driverId;
+
+    @Column
+    private Integer driverXLocation;
+
+    @Column
+    private Integer driverYLocation;
 
     @Column
     private  String destination;
+
+    @Column
+    private  boolean driverAccepted;
+
+    @Autowired
+    public Ride() {
+        this.id = Instant.now().getNano();
+    }
 }

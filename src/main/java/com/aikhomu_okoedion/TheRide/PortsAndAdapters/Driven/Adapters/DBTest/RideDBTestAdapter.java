@@ -1,19 +1,25 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.RideRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class RideDBTestAdapter implements RideRepository {
 
+   // private static List<Ride> mockDB = new ArrayList<>();
+
     @Override
     public Ride save(Ride entity) {
+        // mockDB.add(entity);
         return entity;
     }
 
@@ -24,7 +30,10 @@ public class RideDBTestAdapter implements RideRepository {
 
     @Override
     public Optional<Ride> findById(Integer integer) {
-        return Optional.empty();
+        List<Ride> mockDB = new ArrayList<>();
+
+        List<Ride> filtered = mockDB.stream().filter(val -> val.getId() == integer).collect(Collectors.toList());
+        return Optional.ofNullable(filtered.get(0));
     }
 
     @Override
@@ -34,7 +43,8 @@ public class RideDBTestAdapter implements RideRepository {
 
     @Override
     public List<Ride> findAll() {
-        return null;
+        List<Ride> mockDB = new ArrayList<>();
+        return mockDB;
     }
 
     @Override

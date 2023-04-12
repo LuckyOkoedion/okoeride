@@ -2,21 +2,21 @@ package com.aikhomu_okoedion.TheRide.Core.Domain;
 
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
+import java.time.Instant;
 
 @Data
-@Table
+@Table("driver")
 public class Driver {
     @PrimaryKey
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column
     private String name;
 
@@ -31,17 +31,22 @@ public class Driver {
     @Column
     private Integer rideId;
 
+    @Autowired
     public Driver() {
+
+        this.id = Instant.now().getNano();
 
     }
 
     public Driver(Ride theRide) {
+        this.id = Instant.now().getNano();
         this.rideId = theRide.getId();
         this.customerId = theRide.getCustomerId();
 
     }
 
     public Driver(Geolocation loc) {
+        this.id = Instant.now().getNano();
         this.locationX = loc.getX();
         this.locationY = loc.getY();
     }

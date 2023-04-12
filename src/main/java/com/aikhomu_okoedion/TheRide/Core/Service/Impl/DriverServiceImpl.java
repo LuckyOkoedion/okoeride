@@ -1,54 +1,75 @@
 package com.aikhomu_okoedion.TheRide.Core.Service.Impl;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
-import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
-import com.aikhomu_okoedion.TheRide.Core.Dtos.RideDTO;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IDriverService;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IWebsocketService;
+import com.aikhomu_okoedion.TheRide.Core.System.Impl.SystemServiceImpl;
 import com.aikhomu_okoedion.TheRide.Core.System.Interfaces.ISystemService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB.DriverDBAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB.RideDBAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.DriverDBTestAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DBTest.RideDBTestAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaMessageAdapter;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaTestAdapter;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
+import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.RideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DriverServiceImpl implements IDriverService {
 
-    @Autowired
+
     ISystemService systemService;
 
 
     DriverRepository driverRepository;
 
-    @Autowired
+    RideRepository rideRepository;
+
     IWebsocketService websocketService;
 
+    IMessagePort messenger;
+
+
     @Autowired
-    @Qualifier("kafkaMessageAdapter")
-    IMessagePort message;
-
-
-    public DriverServiceImpl(DriverDBAdapter driverDBAdapter) {
+    public DriverServiceImpl(DriverDBAdapter driverDBAdapter, SystemServiceImpl systemServiceImpl,
+                             WebsocketServiceImpl websocketServiceImpl, KafkaMessageAdapter kafkaMessageAdapter,
+                             RideDBAdapter rideDBAdapter) {
         this.driverRepository = driverDBAdapter;
+        this.systemService = systemServiceImpl;
+        this.websocketService = websocketServiceImpl;
+        this.messenger = kafkaMessageAdapter;
+        this.rideRepository = rideDBAdapter;
+    }
+
+    public DriverServiceImpl(SystemServiceImpl systemService, DriverDBTestAdapter dbTestAdapter,
+                             WebsocketServiceImpl websocketServiceImpl, KafkaTestAdapter kafkaTestAdapter,
+                             RideDBTestAdapter rideDBTestAdapter) {
+        this.systemService = systemService;
+        this.driverRepository = dbTestAdapter;
+        this.websocketService = websocketServiceImpl;
+        this.rideRepository = rideDBTestAdapter;
+        this.messenger = kafkaTestAdapter;
+
     }
 
 
 
     @Override
-    public void acceptRequest(RideDTO rideDetails) {
-        // Todo - Add to ride db
+    public void acceptRequest(Ride rideDetails) {
+       this.messenger.sendRideToAccepted(rideDetails);
     }
 
     @Override
-    public void broadcastLocation(int driverId, GeolocationDTO location) {
-        // Todo - Push location to kafka
-    }
-
-    @Override
-    public MessageDTO getMatchedRide(int driverId) {
-        // Todo - Get matched Ride from Kafka for driver
-        return null;
+    public List<Ride> getMatchedRide(int driverId) {
+        List<Ride> rides = this.rideRepository.findAll();
+       List<Ride> toAccept = rides.stream().filter(val -> val.isDriverAccepted() == false && val.getDriverId().equals(driverId)).collect(Collectors.toList());
+        return toAccept;
     }
 }

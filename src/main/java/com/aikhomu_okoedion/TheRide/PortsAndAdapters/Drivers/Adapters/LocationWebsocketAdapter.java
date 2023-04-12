@@ -1,7 +1,7 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Adapters;
 
+import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
-import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDecoder;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IWebsocketService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.IWebsocketPort;
 
@@ -14,12 +14,12 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
 @Component
-
-@ServerEndpoint(value = "/websocket", decoders = MessageDecoder.class)
-public class WebsocketAdapter implements IWebsocketPort {
+@ServerEndpoint("/location")
+public class LocationWebsocketAdapter implements IWebsocketPort {
 
     @Autowired
     IWebsocketService websocketService;
+
 
 
     @OnOpen
@@ -31,13 +31,13 @@ public class WebsocketAdapter implements IWebsocketPort {
 
     @OnMessage
     @Override
-    public void onMessage(MessageDTO message, Session session) {
+    public void onMessage(String message, Session session) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String json = objectMapper.writeValueAsString(message);
-            System.out.println("===== Received message =====: " + json);
-            this.websocketService.publish(message);
+            MessageDTO theMessage = objectMapper.readValue(message, MessageDTO.class);
+            System.out.println("===== Received message =====: " + message);
+            this.websocketService.forwardLocationToKafka(theMessage);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

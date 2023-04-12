@@ -6,15 +6,38 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class CustomerDBTestAdapter implements CustomerRepository {
 
+//    private static List<Customer> mockDB = new ArrayList<>();
+
+    public CustomerDBTestAdapter() {
+//        Customer customer1 = new Customer();
+//        customer1.setId(1000);
+//        customer1.setName("customer1");
+//        Customer customer2 = new Customer();
+//        customer2.setId(2000);
+//        customer2.setName("customer2");
+//        Customer customer3 = new Customer();
+//        customer3.setId(3000);
+//        customer3.setName("customer3");
+//
+//        mockDB.add(customer1);
+//        mockDB.add(customer2);
+//        mockDB.add(customer3);
+
+
+    }
+
 
     @Override
     public Customer save(Customer entity) {
+       // mockDB.add(entity);
         return entity;
     }
 
@@ -25,7 +48,25 @@ public class CustomerDBTestAdapter implements CustomerRepository {
 
     @Override
     public Optional<Customer> findById(Integer integer) {
-        return Optional.empty();
+
+        List<Customer> mockDB = new ArrayList<>();
+        Customer customer1 = new Customer();
+        customer1.setId(1000);
+        customer1.setName("customer1");
+        Customer customer2 = new Customer();
+        customer2.setId(2000);
+        customer2.setName("customer2");
+        Customer customer3 = new Customer();
+        customer3.setId(3000);
+        customer3.setName("customer3");
+
+        mockDB.add(customer1);
+        mockDB.add(customer2);
+        mockDB.add(customer3);
+
+
+        List<Customer> filtered = mockDB.stream().filter(val -> val.getId() == integer).collect(Collectors.toList());
+        return Optional.ofNullable(filtered.get(0));
     }
 
     @Override
@@ -35,7 +76,21 @@ public class CustomerDBTestAdapter implements CustomerRepository {
 
     @Override
     public List<Customer> findAll() {
-        return null;
+        List<Customer> mockDB = new ArrayList<>();
+        Customer customer1 = new Customer();
+        customer1.setId(1000);
+        customer1.setName("customer1");
+        Customer customer2 = new Customer();
+        customer2.setId(2000);
+        customer2.setName("customer2");
+        Customer customer3 = new Customer();
+        customer3.setId(3000);
+        customer3.setName("customer3");
+
+        mockDB.add(customer1);
+        mockDB.add(customer2);
+        mockDB.add(customer3);
+        return mockDB;
     }
 
     @Override

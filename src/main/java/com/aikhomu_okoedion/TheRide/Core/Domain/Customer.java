@@ -1,21 +1,21 @@
 package com.aikhomu_okoedion.TheRide.Core.Domain;
 
 
+import com.aikhomu_okoedion.TheRide.Core.Dtos.CustomerDTO;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import java.time.Instant;
+
 
 @Data
-@Table
+@Table("customer")
 public class Customer {
     @PrimaryKey
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column
     private String name;
@@ -31,6 +31,18 @@ public class Customer {
 
     @Column
     private Integer driverId;
+
+    @Autowired
+    public Customer() {
+        this.id = Instant.now().getNano();
+    }
+
+    public Customer(CustomerDTO cust) {
+        this.id = Instant.now().getNano();
+        this.name = cust.getName();
+
+
+    }
 
 
 }

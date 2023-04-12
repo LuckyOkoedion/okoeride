@@ -1,9 +1,10 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Adapters;
 
 import com.aikhomu_okoedion.TheRide.Core.Domain.Customer;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.CustomerDTO;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
-import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.ICustomerService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.ICustomerPort;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,11 @@ public class CustomerWebAdapter implements ICustomerPort {
     ICustomerService customerService;
 
 
-    @PostMapping("/request/{customerId}")
+    @PostMapping("/request/{customerId}/{destination}")
     @Override
-    public MessageDTO requestRide(@PathVariable int customerId, @RequestBody GeolocationDTO location) {
+    public Driver requestRide(@PathVariable int customerId, @RequestBody GeolocationDTO location, @PathVariable String destination) {
 
-       return ResponseEntity.ok(this.customerService.requestRide(customerId, location)).getBody();
+       return ResponseEntity.ok(this.customerService.requestRide(customerId, location, destination)).getBody();
 
     }
 
@@ -32,10 +33,10 @@ public class CustomerWebAdapter implements ICustomerPort {
         this.customerService.broadcastLocation(customerId, location);
     }
 
-    @GetMapping("/{customerId}")
+    @GetMapping("/{customerId}/{destination}")
     @Override
-    public MessageDTO getMatchedRide( @PathVariable int customerId) {
-        return ResponseEntity.ok(this.customerService.getMatchedRide(customerId)).getBody();
+    public Ride getMatchedRide(@PathVariable int customerId, @PathVariable String destination) {
+        return ResponseEntity.ok(this.customerService.getMatchedRide(customerId, destination)).getBody();
     }
 
     @PostMapping

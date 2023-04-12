@@ -1,8 +1,14 @@
 package com.aikhomu_okoedion.TheRide.Core.Service.Interfaces;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
 
+import javax.websocket.Session;
+
 public interface IWebsocketService {
-    void publish(MessageDTO theMessage);
-    void subscribe();
+    Geolocation forwardLocationToKafka(MessageDTO theMessage);
+    void sendAcceptanceToCustomer(Ride ride);
+
+    void setSession(Session session);
 }

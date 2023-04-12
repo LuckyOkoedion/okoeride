@@ -7,7 +7,7 @@ import javax.websocket.Session;
 
 public interface IWebsocketPort {
     void onOpen (Session session);
-    void onMessage (MessageDTO message, Session session);
+    void onMessage (String message, Session session);
     void onClose (Session session);
 
     void onError (Throwable throwable);
