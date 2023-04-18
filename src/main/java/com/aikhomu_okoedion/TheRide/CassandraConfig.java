@@ -1,13 +1,16 @@
 package com.aikhomu_okoedion.TheRide;
 
-import com.datastax.oss.driver.api.core.CqlSession;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
-import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
-import java.net.InetSocketAddress;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
+
+import org.springframework.data.cassandra.core.cql.session.init.KeyspacePopulator;
+import org.springframework.data.cassandra.core.cql.session.init.ResourceKeyspacePopulator;
+import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.lang.Nullable;
+
 
 @Configuration
 @EnableCassandraRepositories(basePackages = "com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.DB")
@@ -37,15 +40,12 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
         return this.keyspace;
     }
 
-
-    @Bean
-    public CqlSession cqlSession() {
-      return CqlSession.builder()
-               .addContactPoint( new InetSocketAddress(this.contactpoints, Integer.parseInt(this.port)))
-               .withAuthCredentials(this.username, this.password)
-               .withKeyspace(this.keyspace)
-               .build();
+    @Nullable
+    @Override
+    protected KeyspacePopulator keyspacePopulator() {
+        return new ResourceKeyspacePopulator(new ClassPathResource("init.cql"));
     }
+
 
 
 

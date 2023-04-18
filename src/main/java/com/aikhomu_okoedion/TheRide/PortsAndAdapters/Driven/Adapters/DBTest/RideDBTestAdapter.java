@@ -32,7 +32,11 @@ public class RideDBTestAdapter implements RideRepository {
     public Optional<Ride> findById(Integer integer) {
         List<Ride> mockDB = new ArrayList<>();
 
-        List<Ride> filtered = mockDB.stream().filter(val -> val.getId() == integer).collect(Collectors.toList());
+        Ride ride = new Ride();
+        ride.setId(23456097);
+        mockDB.add(ride);
+
+        List<Ride> filtered = mockDB.stream().filter(val -> val.getId().equals(integer)).collect(Collectors.toList());
         return Optional.ofNullable(filtered.get(0));
     }
 

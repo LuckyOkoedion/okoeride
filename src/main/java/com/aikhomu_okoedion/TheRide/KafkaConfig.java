@@ -41,25 +41,23 @@ public class KafkaConfig {
 
     @Bean
     public KafkaAdmin.NewTopics topics() {
+
         return new KafkaAdmin.NewTopics(
                 TopicBuilder.name("pending")
                         .configs(Map.of(
-                                "retention.ms", topicRetentionMs,
-                                "retention.check.interval.ms", topicRetentionCheckIntervalMs
+                                "retention.ms", topicRetentionMs
                         ))
                         .build(),
                 TopicBuilder.name("matched")
                         .partitions(1)
                         .configs(Map.of(
-                                "retention.ms", topicRetentionMs,
-                                "retention.check.interval.ms", topicRetentionCheckIntervalMs
+                                "retention.ms", topicRetentionMs
                         ))
                         .build(),
                 TopicBuilder.name("accepted")
                         .partitions(1)
                         .configs(Map.of(
-                                "retention.ms", topicRetentionMs,
-                                "retention.check.interval.ms", topicRetentionCheckIntervalMs
+                                "retention.ms", topicRetentionMs
                         ))
                         .build()
         );
@@ -135,7 +133,7 @@ public class KafkaConfig {
     @Bean
     public DefaultKafkaConsumerFactory<String, String> stringConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "group1");
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -145,7 +143,7 @@ public class KafkaConfig {
     @Bean
     public DefaultKafkaConsumerFactory<String, GeolocationDTO> geolocationConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "group1");
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
@@ -156,7 +154,7 @@ public class KafkaConfig {
     @Bean
     public DefaultKafkaConsumerFactory<String, Ride> rideConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "group1");
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
