@@ -1,19 +1,11 @@
 version: "3"
 services:
-  cassandra:
-    image: 'cassandra:latest'
-    ports:
-      - '9042:9042'
-    environment:
-      - CASSANDRA_AUTHENTICATOR=AllowAllAuthenticator
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
-    depends_on:
-      - cassandra
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
