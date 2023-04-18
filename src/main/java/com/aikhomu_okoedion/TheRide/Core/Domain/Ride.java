@@ -31,6 +31,9 @@ public class Ride {
     private  String destination;
 
     @Column
+    private  String driverName;
+
+    @Column
     private  boolean driverAccepted;
 
     @Autowired
