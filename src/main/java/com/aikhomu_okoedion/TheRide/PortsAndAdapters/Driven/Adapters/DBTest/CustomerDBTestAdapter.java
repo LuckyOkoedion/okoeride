@@ -65,7 +65,7 @@ public class CustomerDBTestAdapter implements CustomerRepository {
         mockDB.add(customer3);
 
 
-        List<Customer> filtered = mockDB.stream().filter(val -> val.getId() == integer).collect(Collectors.toList());
+        List<Customer> filtered = mockDB.stream().filter(val -> val.getId().equals(integer)).collect(Collectors.toList());
         return Optional.ofNullable(filtered.get(0));
     }
 

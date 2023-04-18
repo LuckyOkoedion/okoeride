@@ -6,11 +6,14 @@ import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.CustomerDTO;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 
-public interface ICustomerPort {
-    Driver requestRide(int customerId, GeolocationDTO location, String destination);
-    void broadcastLocation(int customerId, GeolocationDTO location);
+import java.util.List;
 
-    Ride getMatchedRide(int customerId, String destination);
+public interface ICustomerPort {
+    Driver requestRide(Integer customerId, GeolocationDTO location, String destination);
 
     Customer createCustomer(CustomerDTO customer);
+
+    Customer getCustomerById(Integer customerId);
+
+    List<Customer> getAllCustomers();
 }

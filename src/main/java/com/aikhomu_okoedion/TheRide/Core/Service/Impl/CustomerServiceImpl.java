@@ -22,6 +22,8 @@ import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.CustomerRepository;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.DriverRepository;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.Repositories.RideRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,13 +77,21 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public Driver requestRide(int customerId, GeolocationDTO location, String destination) {
+        ObjectMapper op = new ObjectMapper();
+        String json;
+        try {
+            json = op.writeValueAsString(location);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("========= Ride request from client received ========== " + json);
         Geolocation geolocation = new Geolocation(location);
         this.messenger.sendLocationToPending(geolocation);
         Ride res = this.getMatchedRide(customerId, destination);
 
         Optional<Driver> theDriver = this.driverRepository.findById(res.getDriverId());
 
-        if(theDriver.isEmpty()) {
+        if (theDriver.isEmpty()) {
             throw new RuntimeException("Issue getting matched driver's data");
         }
 
@@ -134,5 +144,15 @@ public class CustomerServiceImpl implements ICustomerService {
        theRide.setDriverXLocation(driver.getLocationX());
 
         return this.rideRepository.save(theRide);
+    }
+
+    @Override
+    public Customer getById(Integer customerId) {
+        return this.customerRepository.findById(customerId).get();
+    }
+
+    @Override
+    public List<Customer> getAll() {
+        return this.customerRepository.findAll();
     }
 }

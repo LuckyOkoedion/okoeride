@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: the-ride-api
+  namespace: the-ride-ns
+spec:
+  selector:
+    app: the-ride-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: the-ride-api
+  namespace: the-ride-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: the-ride-api
+  template:
+    metadata:
+      labels:
+        app: the-ride-api
+    spec:
+      containers:
+        - name: the-ride-api
+          image: the-ride-api:latest
+          imagePullPolicy: Never
+          env:
+            - name: CASSANDRA_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_username
+            - name: CASSANDRA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: the-ride-secret
+                  key: db_password
+            - name: CASSANDRA_DATACENTER
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_local-datacenter
+            - name: CASSANDRA_KEYSPACE
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_keyspace-name
+
+            - name: CASSANDRA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_port
+
+            - name: CASSANDRA_AUTH_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_auth-provider
+
+            - name: CASSANDRA_CONTACTPOINTS
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_contact-points
+
+            - name: CASSANDRA_SCHEMA_ACTION
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_schema-action
+
+            - name: CASSANDRA_REQUEST_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_request_timeout
+
+            - name: CASSANDRA_CONNECT_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_connect_timeout
+
+            - name: CASSANDRA_QUERY_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: db_query_timeout
+
+            - name: KAFKA_OFFSET_RESET
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: kafka_offset_reset
+
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: kafka_bootstrap-servers
+
+            - name: KAFKA_INTERVALS
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: kafka_intervals
+
+            - name: KAFKA_RETENTION
+              valueFrom:
+                configMapKeyRef:
+                  name: the-ride-config
+                  key: kafka_retention
+
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /app/logs
+
+      volumes:
+        - name: logs-volume
+          hostPath:
+            path: /Users/okoedion-aikhomu/DevCenter/PersonalDevCenter/Logs_Volume/

@@ -1,0 +1,8 @@
+version: "3"
+services:
+  cassandra:
+    image: 'cassandra:latest'
+    ports:
+      - '9042:9042'
+    environment:
+      - CASSANDRA_AUTHENTICATOR=AllowAllAuthenticator

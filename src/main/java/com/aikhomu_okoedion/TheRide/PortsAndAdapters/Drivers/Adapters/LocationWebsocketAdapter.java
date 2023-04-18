@@ -1,42 +1,37 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Adapters;
 
-import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
+
 import com.aikhomu_okoedion.TheRide.Core.Dtos.MessageDTO;
+import com.aikhomu_okoedion.TheRide.Core.Service.Impl.WebsocketServiceImpl;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IWebsocketService;
-import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.IWebsocketPort;
+
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
-@Component
-@ServerEndpoint("/location")
-public class LocationWebsocketAdapter implements IWebsocketPort {
+@Controller
+public class LocationWebsocketAdapter  {
+
+    private final IWebsocketService websocketService;
 
     @Autowired
-    IWebsocketService websocketService;
-
-
-
-    @OnOpen
-    @Override
-    public void onOpen(Session session) {
-        System.out.println("======= WebSocket connection opened =======");
-
+    public LocationWebsocketAdapter(WebsocketServiceImpl websocketService) {
+        this.websocketService = websocketService;
     }
 
-    @OnMessage
-    @Override
-    public void onMessage(String message, Session session) {
+
+    @MessageMapping("/location")
+    public void getLocation(String message) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             MessageDTO theMessage = objectMapper.readValue(message, MessageDTO.class);
-            System.out.println("===== Received message =====: " + message);
+            System.out.println("===== Location ws Received message =====: " + message);
             this.websocketService.forwardLocationToKafka(theMessage);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -44,17 +39,4 @@ public class LocationWebsocketAdapter implements IWebsocketPort {
 
     }
 
-    @Override
-    public void onClose(Session session) {
-        System.out.println("====== WebSocket connection closed ======");
-
-    }
-
-    @OnError
-    @Override
-    public void onError(Throwable throwable) {
-
-        System.out.println("===== WebSocket error =====: " + throwable.getMessage());
-
-    }
 }

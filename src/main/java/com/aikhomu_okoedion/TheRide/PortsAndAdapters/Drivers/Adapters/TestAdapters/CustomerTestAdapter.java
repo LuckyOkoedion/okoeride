@@ -17,6 +17,8 @@ import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters.KafkaTestAd
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.ICustomerPort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class CustomerTestAdapter implements ICustomerPort {
 
@@ -31,7 +33,7 @@ public class CustomerTestAdapter implements ICustomerPort {
         KafkaTestAdapter kafkaTest = new KafkaTestAdapter();
         WebsocketServiceImpl websocket = new WebsocketServiceImpl(geo, kafkaTest);
         DriverDBTestAdapter driverDBTestAdapter = new DriverDBTestAdapter();
-        SystemServiceImpl systemService = new SystemServiceImpl(kafkaTest, rideDBTestAdapter, driverDBTestAdapter);
+        SystemServiceImpl systemService = new SystemServiceImpl(kafkaTest, rideDBTestAdapter, driverDBTestAdapter, repo);
 
 
 
@@ -40,24 +42,25 @@ public class CustomerTestAdapter implements ICustomerPort {
 
 
     @Override
-    public Driver requestRide(int customerId, GeolocationDTO location, String destination) {
+    public Driver requestRide(Integer customerId, GeolocationDTO location, String destination) {
 
-        return this.customerService.requestRide(customerId, location, destination);
+       return this.customerService.requestRide(customerId, location, destination);
     }
 
-    @Override
-    public void broadcastLocation(int customerId, GeolocationDTO location) {
-        this.customerService.broadcastLocation(customerId, location);
-    }
-
-    @Override
-    public Ride getMatchedRide(int customerId, String destination) {
-        return this.customerService.getMatchedRide(customerId, destination);
-    }
 
     @Override
     public Customer createCustomer(CustomerDTO customer) {
 
         return this.customerService.createCustomer(customer);
+    }
+
+    @Override
+    public Customer getCustomerById(Integer customerId) {
+        return this.customerService.getById(customerId);
+    }
+
+    @Override
+    public List<Customer> getAllCustomers() {
+        return this.customerService.getAll();
     }
 }

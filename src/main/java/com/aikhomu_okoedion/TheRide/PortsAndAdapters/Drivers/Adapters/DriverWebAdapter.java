@@ -1,8 +1,11 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Adapters;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Customer;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IDriverService;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Drivers.Ports.IDriverPort;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +19,26 @@ public class DriverWebAdapter implements IDriverPort {
     @Autowired
     IDriverService driverService;
 
+    @Operation(summary = "Driver accepts ride request", description = "Called in response to data from websocket at 'ws://localhost:8080/matched'")
     @PostMapping("/accept-ride")
     @Override
-    public void acceptRequest( @RequestBody Ride rideDetails) {
-        this.driverService.acceptRequest(rideDetails);
+    public void acceptRequest( @RequestBody Customer customerDetails) {
+        this.driverService.acceptRequest(customerDetails);
     }
 
-
-    @GetMapping("/{driverId}")
+    @Operation(summary = "Get driver by Id")
+    @GetMapping("/{id}")
     @Override
-    public List<Ride> getMatchedRide(@PathVariable int driverId) {
-       return ResponseEntity.ok(this.driverService.getMatchedRide(driverId)).getBody();
+    public Driver getDriverById( @PathVariable Integer driverId) {
+        return this.driverService.getById(driverId);
     }
+
+    @Operation(summary = "Get all drivers")
+    @GetMapping
+    @Override
+    public List<Driver> getAllDrivers() {
+        return this.driverService.getAll();
+    }
+
+
 }

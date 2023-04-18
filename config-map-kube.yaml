@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: the-ride-config
+  namespace: the-ride-ns
+data:
+  db_local-datacenter: "datacenter1"
+  db_keyspace-name: "the_ride"
+  db_username: "cassandra"
+  db_port: "9042"
+  db_auth-provider: "com.datastax.oss.driver.api.core.auth.PlainTextAuthProvider"
+  db_contact-points: "the-ride-cassandra.the-ride-ns.svc.cluster.local:9042"
+  db_schema-action: "create-if-not-exists"
+  db_request_timeout: "10s"
+  db_connect_timeout: "10s"
+  db_query_timeout: "10s"
+  kafka_offset_reset: "earliest"
+  kafka_bootstrap-servers: "my-kafka.default.svc.cluster.local:9092"
+  kafka_intervals: "70000"
+  kafka_retention: "60000"

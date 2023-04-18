@@ -8,6 +8,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 public class TheRideApplication {
@@ -28,8 +30,19 @@ public class TheRideApplication {
 		testMessage.setY(3);
 
 		return args -> {
-			template.send("pending", "test1", testMessage);
+
+			try {
+				System.out.println("===============Sending test payload to kafka Pending =============");
+				template.send("pending", "test1", testMessage);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+
+			}
+
 		};
 	}
+
+
 
 }

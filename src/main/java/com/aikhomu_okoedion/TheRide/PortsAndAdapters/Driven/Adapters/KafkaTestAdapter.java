@@ -1,5 +1,7 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Customer;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
@@ -42,6 +44,22 @@ public class KafkaTestAdapter implements IMessagePort {
         try {
             String json = objectMapper.writeValueAsString(ride);
             System.out.println("===== accepted ride published to kafka =====" + json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void sendCustomerToMatched(Customer customer) {
+
+        List<Customer> mockKafka = new ArrayList<>();
+
+        mockKafka.add(customer);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(customer);
+            System.out.println("===== matched customer published to kafka =====" + json);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

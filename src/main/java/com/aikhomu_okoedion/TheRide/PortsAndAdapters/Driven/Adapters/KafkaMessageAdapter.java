@@ -1,9 +1,13 @@
 package com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Adapters;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Customer;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -53,30 +57,91 @@ public class KafkaMessageAdapter implements IMessagePort {
 
     @Override
     public void sendLocationToPending(Geolocation location) {
-        GeolocationDTO data = new GeolocationDTO(location);
-        geolocationKafkaTemplate.send(PENDING_TOPIC, Integer.toString(location.getId()), data);
+
+        try{
+            ObjectMapper om = new ObjectMapper();
+            GeolocationDTO data = new GeolocationDTO(location);
+            String json = om.writeValueAsString(data);
+            System.out.println("========== Attempting to send ride request to kafka ============= " + json);
+            geolocationKafkaTemplate.send(PENDING_TOPIC, Integer.toString(location.getId()), data);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
     @Override
     public void sendRideToAccepted(Ride ride) {
-        this.rideKafkaTemplate.send(ACCEPTED, Integer.toString(ride.getId()), ride);
+
+        try {
+
+            ObjectMapper om = new ObjectMapper();
+            String json = om.writeValueAsString(ride);
+
+            System.out.println("========== Attempting to send accepted ride to kafka ============= " + json);
+
+            this.rideKafkaTemplate.send(ACCEPTED, Integer.toString(ride.getId()), ride);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    @Override
+    public void sendCustomerToMatched(Customer customer) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String json = objectMapper.writeValueAsString(customer);
+            System.out.println("========== Attempting to send matched customer to kafka ============= " + json);
+            this.stringKafkaTemplate.send(MATCHED, String.valueOf(customer.getId()), json);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+
+        }
+
+
 
     }
 
     @Override
     public List<GeolocationDTO> getLocationDataPendingMatch() {
-        Consumer<String, GeolocationDTO> consumer = geolocationConsumerFactory.createConsumer();
-        consumer.subscribe(Collections.singletonList(this.PENDING_TOPIC));
-        List<GeolocationDTO> messages = new ArrayList<>();
-        ConsumerRecords<String, GeolocationDTO> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-        for (ConsumerRecord<String, GeolocationDTO> record : consumerRecords) {
-            messages.add(record.value());
+
+        try {
+
+            System.out.println("========== System service attempting to get locations pending match from kafka ============= ");
+
+            Consumer<String, GeolocationDTO> consumer = geolocationConsumerFactory.createConsumer();
+            consumer.subscribe(Collections.singletonList(this.PENDING_TOPIC));
+            List<GeolocationDTO> messages = new ArrayList<>();
+            ConsumerRecords<String, GeolocationDTO> consumerRecords = consumer.poll(Duration.ofSeconds(1));
+            for (ConsumerRecord<String, GeolocationDTO> record : consumerRecords) {
+                messages.add(record.value());
+            }
+
+            consumer.commitSync();
+            consumer.close();
+
+            ObjectMapper om = new ObjectMapper();
+            String json = om.writeValueAsString(messages);
+
+            System.out.println("======== Result form system call to kafka is =========" + json);
+
+            return messages;
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        consumer.commitSync();
-        consumer.close();
 
-        return messages;
+        return null;
     }
 
 

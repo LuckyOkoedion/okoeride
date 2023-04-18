@@ -1,5 +1,7 @@
 package com.aikhomu_okoedion.TheRide.Core.Service.Impl;
 
+import com.aikhomu_okoedion.TheRide.Core.Domain.Customer;
+import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
 import com.aikhomu_okoedion.TheRide.Core.Service.Interfaces.IDriverService;
@@ -62,8 +64,9 @@ public class DriverServiceImpl implements IDriverService {
 
 
     @Override
-    public void acceptRequest(Ride rideDetails) {
-       this.messenger.sendRideToAccepted(rideDetails);
+    public void acceptRequest(Customer customerDetails) {
+        Ride theRide = this.rideRepository.findById(customerDetails.getRideId()).get();
+        this.messenger.sendRideToAccepted(theRide);
     }
 
     @Override
@@ -71,5 +74,15 @@ public class DriverServiceImpl implements IDriverService {
         List<Ride> rides = this.rideRepository.findAll();
        List<Ride> toAccept = rides.stream().filter(val -> val.isDriverAccepted() == false && val.getDriverId().equals(driverId)).collect(Collectors.toList());
         return toAccept;
+    }
+
+    @Override
+    public Driver getById(Integer driverId) {
+        return this.driverRepository.findById(driverId).get();
+    }
+
+    @Override
+    public List<Driver> getAll() {
+        return this.driverRepository.findAll();
     }
 }
