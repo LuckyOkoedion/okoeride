@@ -11,7 +11,7 @@ public interface IWebsocketService {
     Geolocation forwardLocationToKafka(MessageDTO theMessage);
     void sendAcceptanceToCustomer(Ride ride);
 
-    void sendMatchToDriver(Customer customer);
+    void sendMatchToDriver(String customer);
 
     void setSession(Session session);
 }
