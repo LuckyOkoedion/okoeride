@@ -21,6 +21,11 @@ docker-compose -f ./kafka-docker-compose.yaml -p the_ride_api up
 
 docker-compose -f ./cassandra-docker-compose.yaml -p the_ride_api up
 
+cqlsh
+
+CREATE KEYSPACE the_ride WITH replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1};
+
+
 ## Run
 
 Start like any other springboot application and see swagger UI at http://localhost:8080
