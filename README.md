@@ -14,21 +14,34 @@ mvn clean install
 
 ## Start zookeeper and kafka (You should have docker installed, up and running)
 
-docker-compose -f ./kafka-docker-compose.yaml -p the_ride_api up
+docker-compose -f ./kafka-docker-compose.yaml -p the_ride up
 
 
 ## Start Cassandra DB
 
-docker-compose -f ./cassandra-docker-compose.yaml -p the_ride_api up
+docker-compose -f ./cassandra-docker-compose.yaml -p the_ride up
 
 cqlsh
 
 CREATE KEYSPACE the_ride WITH replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1};
 
+## Build docker Image
 
-## Run
+docker build -t the-ride-api:latest .
 
-Start like any other springboot application and see swagger UI at http://localhost:8080
+## Update Config-map-kube.yaml with the correct IPs for db and kafka and apply
+kubectl apply -f config-map-kube.yaml
+
+## Create Kubernetes deployment
+kubectl apply -f api-kube.yaml
+
+## Create service for external access
+kubectl apply -f api-service-kube.yaml
+
+## ACCESS API HERE (If using kubernetes on mac docker desktop)
+
+http://kubernetes.docker.internal:30080/swagger-ui/index.html
+
 
 
 
