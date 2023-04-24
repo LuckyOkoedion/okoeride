@@ -5,6 +5,7 @@ import com.aikhomu_okoedion.TheRide.Core.Domain.Driver;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Geolocation;
 import com.aikhomu_okoedion.TheRide.Core.Domain.Ride;
 import com.aikhomu_okoedion.TheRide.Core.Dtos.GeolocationDTO;
+import com.aikhomu_okoedion.TheRide.Core.Service.Impl.WebsocketServiceImpl;
 import com.aikhomu_okoedion.TheRide.PortsAndAdapters.Driven.Ports.IMessagePort;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,19 +14,26 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
 public class KafkaMessageAdapter implements IMessagePort {
+
+    private static final long CACHE_DURATION = 2 * 60 * 1000;
+
+    private ConcurrentHashMap<String, KafkaMessageAdapter.CacheEntry> cache = new ConcurrentHashMap<>();
 
     private final String PENDING_TOPIC = "pending";
     private final String ACCEPTED = "accepted";
@@ -62,7 +70,7 @@ public class KafkaMessageAdapter implements IMessagePort {
             ObjectMapper om = new ObjectMapper();
             GeolocationDTO data = new GeolocationDTO(location);
             String json = om.writeValueAsString(data);
-            System.out.println("========== Attempting to send ride request to kafka ============= " + json);
+            System.out.println("========== Attempting to send location broadcast to kafka ============= " + json);
             geolocationKafkaTemplate.send(PENDING_TOPIC, Integer.toString(location.getId()), data);
 
         } catch (Exception e) {
@@ -118,16 +126,10 @@ public class KafkaMessageAdapter implements IMessagePort {
 
             System.out.println("========== System service attempting to get locations pending match from kafka ============= ");
 
-            Consumer<String, GeolocationDTO> consumer = geolocationConsumerFactory.createConsumer();
-            consumer.subscribe(Collections.singletonList(this.PENDING_TOPIC));
-            List<GeolocationDTO> messages = new ArrayList<>();
-            ConsumerRecords<String, GeolocationDTO> consumerRecords = consumer.poll(Duration.ofSeconds(1));
-            for (ConsumerRecord<String, GeolocationDTO> record : consumerRecords) {
-                messages.add(record.value());
+            ArrayList<GeolocationDTO> messages = new ArrayList<>();
+            for (CacheEntry entry : cache.values()) {
+                messages.add(entry.parameter);
             }
-
-            consumer.commitSync();
-            consumer.close();
 
             ObjectMapper om = new ObjectMapper();
             String json = om.writeValueAsString(messages);
@@ -142,6 +144,56 @@ public class KafkaMessageAdapter implements IMessagePort {
 
 
         return null;
+    }
+
+
+    @KafkaListener(topics = "pending", groupId = "group1")
+    public void cachePendingTopicData(String raw) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            GeolocationDTO data = objectMapper.readValue(raw, GeolocationDTO.class);
+
+            System.out.println("====== Kafka pending topic listener  with ===== " + raw);
+
+            String key = data.getDriverId() + "-" + data.getCustomerId();
+            KafkaMessageAdapter.CacheEntry entry = new KafkaMessageAdapter.CacheEntry(data, System.currentTimeMillis());
+            cache.put(key, entry);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+
+    @Scheduled(fixedRate = CACHE_DURATION)
+    public void refreshPendingCache() {
+        System.out.println("======== Time to refresh pending cache ======== ");
+        System.out.println("======== Cache size before refresh is ======== " + cache.size());
+        System.out.println("======== Now refreshing cache ======== ");
+        cache.clear();
+        System.out.println("======== Cache size after refreshing is ======== " + cache.size());
+    }
+
+
+    private static class CacheEntry {
+        private  GeolocationDTO parameter;
+        private long timestamp;
+
+        public CacheEntry( GeolocationDTO parameter, long timestamp) {
+            this.parameter = parameter;
+            this.timestamp = timestamp;
+        }
+
+        public  GeolocationDTO getParameter() {
+            return parameter;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
     }
 
 

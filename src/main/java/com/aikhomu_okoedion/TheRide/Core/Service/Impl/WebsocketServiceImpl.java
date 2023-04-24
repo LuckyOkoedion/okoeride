@@ -20,11 +20,17 @@ import org.springframework.kafka.annotation.KafkaListener;
 import javax.websocket.*;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
-@Scope(scopeName = "websocket", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class WebsocketServiceImpl implements IWebsocketService {
+
+    private static final long CACHE_DURATION = 5 * 60 * 1000;
+
+    private ConcurrentHashMap<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     IMessagePort messenger;
 
@@ -56,8 +62,26 @@ public class WebsocketServiceImpl implements IWebsocketService {
     public Geolocation forwardLocationToKafka(MessageDTO theMessage) {
         Geolocation geolocation = new Geolocation(theMessage);
        this.messenger.sendLocationToPending(geolocation);
+
+        String key = geolocation.getDriverId() + "-" + geolocation.getCustomerId();
+        CacheEntry entry = new CacheEntry(geolocation, System.currentTimeMillis());
+        cache.put(key, entry);
+
         this.geolocationRepository.save(geolocation);
         return geolocation;
+    }
+
+
+    @Scheduled(fixedRate = CACHE_DURATION)
+    public void saveToDatabase() {
+        System.out.println("======== Time to save cache to db ======== ");
+        System.out.println("======== Cache size to save is ======== " + cache.size());
+        for (CacheEntry entry : cache.values()) {
+            this.geolocationRepository.save(entry.getParameter());
+        }
+        System.out.println("======== Now clearing cache ======== ");
+        cache.clear();
+        System.out.println("======== Cache size after clearing is ======== " + cache.size());
     }
 
 
@@ -79,12 +103,13 @@ public class WebsocketServiceImpl implements IWebsocketService {
 
     @Override
     @KafkaListener(topics = "matched", groupId = "group1")
-    public void sendMatchToDriver(Customer customer) {
+    public void sendMatchToDriver(String customer) {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            String json = objectMapper.writeValueAsString(customer);
-            System.out.println("====== Kafka matched topic listener in websocket service triggered with ===== " + json);
+            Customer raw = objectMapper.readValue(customer, Customer.class);
+            System.out.println("====== Kafka matched topic listener in websocket service triggered with ===== " + customer);
+            // Sending with websocket
             this.simpMessagingTemplate.convertAndSend("/matched", customer);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -96,6 +121,25 @@ public class WebsocketServiceImpl implements IWebsocketService {
     @Override
     public void setSession(Session session) {
 
+    }
+
+
+    private static class CacheEntry {
+        private  Geolocation parameter;
+        private long timestamp;
+
+        public CacheEntry( Geolocation parameter, long timestamp) {
+            this.parameter = parameter;
+            this.timestamp = timestamp;
+        }
+
+        public  Geolocation getParameter() {
+            return parameter;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
     }
 
 
