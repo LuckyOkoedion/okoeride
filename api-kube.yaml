@@ -1,20 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: TheRideDeployment
+  name: the-ride-api-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: my-app
+      app: the-ride-api-app
   template:
     metadata:
       labels:
-        app: my-app
+        app: the-ride-api-app
     spec:
       containers:
-        - name: TheRideApiImage
-          image: TheRideApi:latest
+        - name: the-ride-api-image
+          image: the-ride-api:latest
+          imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: TheRideConfig
+                name: the-ride-config
